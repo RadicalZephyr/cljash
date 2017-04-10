@@ -8,9 +8,11 @@ import jnr.posix.POSIX;
 import jnr.posix.POSIXFactory;
 
 public class Minishell {
-    private static POSIX posix = POSIXFactory.getNativePOSIX();
+    private static POSIX posix;
 
     public static void main(String[] args) {
+        posix = POSIXFactory.getNativePOSIX();
+
         try (InputStreamReader r = new InputStreamReader(System.in);
              BufferedReader input = new BufferedReader(r)) {
 
@@ -27,6 +29,14 @@ public class Minishell {
     }
 
     private static void processLine(String line) {
-        System.err.printf("You typed: '%s'\n", line);
+        int cpid = posix.fork();
+
+        if (cpid == 0) {
+            posix.execv(line, null);
+            System.exit(127);
+        }
+
+        int[] status = new int[1];
+        posix.wait(status);
     }
 }

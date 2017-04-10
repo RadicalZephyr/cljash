@@ -4,6 +4,7 @@
 (set-env! :resource-paths #{"src"}
           :dependencies   (template
                            [[org.clojure/clojure ~(clojure-version)]
+                            [com.github.jnr/jnr-posix "3.0.37"]
                             [boot/core             "2.7.1" :scope "provided"]
                             [metosin/boot-alt-test "0.3.1" :scope "test"]]))
 

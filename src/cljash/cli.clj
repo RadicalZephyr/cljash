@@ -4,17 +4,21 @@
   (:import
    (java.io BufferedReader
             InputStreamReader
-            IOException)))
+            IOException)
+   (jnr.posix POSIX
+              POSIXFactory)
+   (jnr.posix.util ProcessMaker)))
+
+(defonce ^POSIX posix (POSIXFactory/getNativePOSIX))
 
 (defn prompt-and-read! [reader]
   (.print System/err "%% ")
   (.readLine reader))
 
 (defn process-line [line]
-  (let [process-builder (-> (ProcessBuilder. (into-array String [line]))
-                            )]
+  (let [process-maker (.newProcessMaker posix (into-array String [line]))]
     (try
-      (.start process-builder)
+      (.start process-maker)
       (catch IOException e
         (.printf System/err "error: %s\n" (into-array Object (.getMessage e)))))))
 
@@ -25,4 +29,4 @@
     (loop []
       (when-let [line (prompt-and-read! reader)]
         (process-line line)
-        (recur)))))
+       (recur)))))

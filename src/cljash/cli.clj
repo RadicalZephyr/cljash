@@ -6,8 +6,7 @@
             InputStreamReader
             IOException)
    (jnr.posix POSIX
-              POSIXFactory)
-   (jnr.posix.util ProcessMaker)))
+              POSIXFactory)))
 
 (defonce ^POSIX posix (POSIXFactory/getNativePOSIX))
 
@@ -16,11 +15,10 @@
   (.readLine reader))
 
 (defn process-line [line]
-  (let [process-maker (.newProcessMaker posix (into-array String [line]))]
-    (try
-      (.start process-maker)
-      (catch IOException e
-        (.printf System/err "error: %s\n" (into-array Object (.getMessage e)))))))
+  (let [cpid (.fork posix)]
+    (if (= cpid 0)
+      (.execv posix line (into-array String []))
+      (.wait posix (int-array 1)))))
 
 (defn cli []
   (with-open [reader (-> System/in

@@ -1,6 +1,7 @@
 (ns cljash.cli
   (:require [boot.core :as boot]
-            [boot.util :as util])
+            [boot.util :as util]
+            [clojure.string :as str])
   (:import
    (java.io BufferedReader
             InputStreamReader
@@ -14,9 +15,15 @@
   (.print System/err "%% ")
   (.readLine reader))
 
+(defn arg-parse [line]
+  (-> line
+      (str/replace #" +" " ")
+      (str/split #" ")))
+
 (defn process-line [line]
-  (let [envp (mapv #(format "%s=%s" (.getKey %) (.getValue %)) (System/getenv))]
-    (.posix_spawnp posix line [] [line] envp)
+  (let [envp (mapv #(format "%s=%s" (.getKey %) (.getValue %)) (System/getenv))
+        [command :as args] (arg-parse line)]
+    (.posix_spawnp posix command [] args envp)
     (.wait posix (int-array 1))))
 
 (defn cli []

@@ -34,24 +34,24 @@ main (void)
     while (1) {
 
         /* prompt and get line */
-	fprintf (stderr, "%% ");
-	if (fgets (buffer, LINELEN, stdin) != buffer)
-	  break;
+        fprintf (stderr, "%% ");
+        if (fgets (buffer, LINELEN, stdin) != buffer)
+            break;
 
         /* Get rid of \n at end of buffer. */
-	len = strlen(buffer);
-	if (buffer[len-1] == '\n')
-	    buffer[len-1] = 0;
+        len = strlen(buffer);
+        if (buffer[len-1] == '\n')
+            buffer[len-1] = 0;
 
-	/* Run it ... */
-	processline (buffer);
+        /* Run it ... */
+        processline (buffer);
 
     }
 
     if (!feof(stdin))
         perror ("read");
 
-    return 0;		/* Also known as exit (0); */
+    return 0;   /* Also known as exit (0); */
 }
 
 
@@ -63,19 +63,19 @@ void processline (char *line)
     /* Start a new process to do the job. */
     cpid = fork();
     if (cpid < 0) {
-      perror ("fork");
-      return;
+        perror ("fork");
+        return;
     }
 
     /* Check for who we are! */
     if (cpid == 0) {
-      /* We are the child! */
-      execlp (line, line, (char *)0);
-      perror ("exec");
-      exit (127);
+        /* We are the child! */
+        execlp (line, line, (char *)0);
+        perror ("exec");
+        exit (127);
     }
 
     /* Have the parent wait for child to complete */
     if (wait (&status) < 0)
-      perror ("wait");
+        perror ("wait");
 }

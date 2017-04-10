@@ -15,10 +15,9 @@
   (.readLine reader))
 
 (defn process-line [line]
-  (let [cpid (.fork posix)]
-    (if (= cpid 0)
-      (.execv posix line (into-array String []))
-      (.wait posix (int-array 1)))))
+  (let [envp (mapv #(format "%s=%s" (.getKey %) (.getValue %)) (System/getenv))]
+    (.posix_spawnp posix line [] [line] envp)
+    (.wait posix (int-array 1))))
 
 (defn cli []
   (with-open [reader (-> System/in

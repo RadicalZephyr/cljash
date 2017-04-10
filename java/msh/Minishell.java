@@ -4,8 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Map;
+
 import jnr.posix.POSIX;
 import jnr.posix.POSIXFactory;
+import jnr.posix.SpawnFileAction;
 
 public class Minishell {
     private static POSIX posix;
@@ -29,13 +34,12 @@ public class Minishell {
     }
 
     private static void processLine(String line) {
-        int cpid = posix.fork();
-
-        if (cpid == 0) {
-            posix.execv(line, null);
-            System.exit(127);
+        ArrayList<String> envp = new ArrayList<String>();
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            envp.add(entry.getKey() + "=" + entry.getValue());
         }
 
+        long childId = posix.posix_spawnp(line, new ArrayList<SpawnFileAction>(), Arrays.asList(line), envp);
         int[] status = new int[1];
         posix.wait(status);
     }

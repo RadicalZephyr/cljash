@@ -1,0 +1,14 @@
+#!/usr/bin/env boot
+
+(set-env! :dependencies '[[cljash "0.1.0-SNAPSHOT"]])
+(require  '[boot.cli :refer [defclifn]]
+          '[cljash.cli :refer [cli]])
+
+(defclifn -main
+  "The cljash shell interpreter/Clojure REPL."
+  []
+  (cli))
+
+;; Local Variables:
+;; mode: clojure
+;; End:

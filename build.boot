@@ -2,6 +2,7 @@
 (def +version+ "0.1.0-SNAPSHOT")
 
 (set-env! :resource-paths #{"src"}
+          :source-paths #{"java"}
           :dependencies   (template
                            [[org.clojure/clojure ~(clojure-version)]
                             [com.github.jnr/jnr-posix "3.0.37"]
@@ -23,3 +24,9 @@
   (comp (pom) (jar) (install)))
 
 (require '[metosin.boot-alt-test :refer [alt-test]])
+
+(deftask run-shell []
+  (with-pass-thru [_]
+    (require 'cljash.task)
+    (when-let [main (resolve 'cljash.task/main)]
+      (main))))
